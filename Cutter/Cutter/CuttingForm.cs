@@ -1,23 +1,17 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using MyCutters;
 using System.Threading;
 using System.Windows.Forms;
+using static System.Windows.Forms.DataFormats;
 
 namespace Cutter
 {
     public partial class CuttingForm : Form
     {
-		[STAThread]
-		static void Main()
-		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new CuttingForm());
-		}
 
-		public CuttingForm()
+        
+        public CuttingForm()
         {
             InitializeComponent();
         }
@@ -36,7 +30,7 @@ namespace Cutter
                 }
                 else
                 {
-                    szal1.Abort();
+                    //szal1.Abort();
                     szal1 = null;
                     if (ctd1.cc1 != null)
                     {
@@ -53,7 +47,7 @@ namespace Cutter
                 }
                 else
                 {
-                    szal2.Abort();
+                    //szal2.Abort();
                     szal2 = null;
                     if (ctd2.cc2 != null)
                     {
@@ -70,7 +64,7 @@ namespace Cutter
                 }
                 else
                 {
-                    szal3.Abort();
+                    //szal3.Abort();
                     szal3 = null;
                     if (ctd3.cc3 != null)
                     {
@@ -109,7 +103,7 @@ namespace Cutter
             ctd1.cc1 = null;
             try
             {
-                ctd1.cc1 = new MyCutters.Cutter_1(ctd1.Text);
+                ctd1.cc1 = new Cutter_1(ctd1.Text);
             }
             catch(Exception e)
             {
@@ -222,6 +216,7 @@ namespace Cutter
 
         private void button4_Click(object sender, EventArgs e)
         {
+            openFileDialog1.InitialDirectory = Environment.CurrentDirectory + "\\peldak";
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 string text = File.ReadAllText(openFileDialog1.FileName);
@@ -244,7 +239,7 @@ namespace Cutter
 
         private void CuttingForm_Shown(object sender, EventArgs e)
         {
-            button2.Focus();
+			button2.Focus();
             timer1.Start();
         }
 
@@ -258,13 +253,16 @@ namespace Cutter
         {
             CuttingForm_SizeChanged(this, null);
         }
-    }
+
+		
+
+	}
 
     class CuttingData
     {
         public string Text;
         public long Probakszama;
-        public MyCutters.Cutter_1 cc1;
+        public Cutter_1 cc1;
         public Cutter_2 cc2;
         public Cutter_3 cc3;
     }
