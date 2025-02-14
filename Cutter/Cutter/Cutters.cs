@@ -1459,7 +1459,7 @@ namespace Cutter
 
 	public class Cutter_3
 	{
-		[DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
+		[DllImport("kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
 		public static extern void CopyMemory(int[] dest, int[] src, uint count);
 		static int intSize = Marshal.SizeOf(typeof(int));
 
