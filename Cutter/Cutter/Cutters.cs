@@ -1,10 +1,144 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Cutter
 {
+	public static class Rendezesek
+	{
+		static void Rendez1D(int[] arr2, int p, int r)
+		{
+			int Low, High, MidValue;
+			Low = p;
+			High = r;
+			MidValue = arr2[(p + r) / 2];
+			do
+			{
+				while (arr2[Low] < MidValue) ++Low;
+				while (arr2[High] > MidValue) --High;
+				if (Low <= High)
+				{
+					int T = arr2[Low];
+					arr2[Low] = arr2[High];
+					arr2[High] = T;
+					++Low;
+					--High;
+				}
+			} while (Low <= High);
+			if (p < High) Rendez1D(arr2, p, High);
+			if (Low < r) Rendez1D(arr2, Low, r);
+		}
+
+		public static void SzalDarabRendezes(int[] arr, int[] hatarok, int index, bool csokkeno)
+		{
+			//Az index szál darabjait rendezi sorba növekvő/csökkenő érték szerint.
+			int[] tempArr = new int[hatarok[1 + index] - hatarok[index]];
+			Array.Copy(arr, hatarok[index], tempArr, 0, tempArr.Length);
+			Array.Sort(tempArr);
+			if (csokkeno) Array.Reverse(tempArr);
+			Array.Copy(tempArr, 0, arr, hatarok[index], tempArr.Length);
+		}
+
+		public static void SzalDarabRendezes(int[] arr, int[] hatarok, int index)
+		{
+			Rendez1D(arr, hatarok[index], hatarok[1 + index] - 1);
+		}
+
+		static void Rendez2D_Cs(int[,] arr2, int row, int p, int r)
+		{
+			int Low, High, MidValue;
+			Low = p;
+			High = r;
+			MidValue = arr2[row, (p + r) / 2];
+			do
+			{
+				while (arr2[row, Low] > MidValue) ++Low;
+				while (arr2[row, High] < MidValue) --High;
+				if (Low <= High)
+				{
+					int T = arr2[row, Low];
+					arr2[row, Low] = arr2[row, High];
+					arr2[row, High] = T;
+					++Low;
+					--High;
+				}
+			} while (Low <= High);
+			if (p < High) Rendez2D_Cs(arr2, row, p, High);
+			if (Low < r) Rendez2D_Cs(arr2, row, Low, r);
+		}
+
+		public static void SzalRendez2D(int[,] tomb2d, int sordarab)
+		{
+			for (int i = 0; i < sordarab; ++i)
+			{
+				Rendez2D_Cs(tomb2d, i, 2, tomb2d[i, 0] + 1);
+			}
+		}
+
+		
+		public static void RendezHulladekCsokkeno2D(int[,] tomb2D, int sordarab)
+		{
+			int mintempindex;
+			for (int i = 0; i < sordarab - 1; ++i)
+			{
+				mintempindex = i;
+				for (int j = 1 + i; j < sordarab; ++j)
+				{
+					if (tomb2D[j, 1] > tomb2D[mintempindex, 1])
+					{
+						mintempindex = j;
+					}
+				}
+				if (mintempindex > i)
+				{
+					SzalCsere2D(tomb2D, i, mintempindex);
+				}
+			}
+		}
+		
+		static void SzalCsere2D(int[,] Tomb2D, int szal1, int szal2)
+		{
+			int mashossz = Tomb2D[szal1, 0];
+			if (Tomb2D[szal2, 0] > Tomb2D[szal1, 0]) mashossz = Tomb2D[szal2, 0];
+			int tmp;
+			for (int i = 0; i < mashossz; ++i)
+			{
+				tmp = Tomb2D[szal1, 2 + i];
+				Tomb2D[szal1, 2 + i] = Tomb2D[szal2, 2 + i];
+				Tomb2D[szal2, 2 + i] = tmp;
+			}
+			tmp = Tomb2D[szal1, 0];
+			Tomb2D[szal1, 0] = Tomb2D[szal2, 0];
+			Tomb2D[szal2, 0] = tmp;
+			tmp = Tomb2D[szal1, 1];
+			Tomb2D[szal1, 1] = Tomb2D[szal2, 1];
+			Tomb2D[szal2, 1] = tmp;
+		}
+		public static void QuickSort(int[] arr2, int p, int r)
+		{//quicksort
+			int Low, High;
+			int MidValue;
+			Low = p;
+			High = r;
+			MidValue = arr2[(p + r) / 2];
+			do
+			{
+				while (arr2[Low] < MidValue) ++Low;
+				while (arr2[High] > MidValue) --High;
+				if (Low <= High)
+				{
+					int T = arr2[Low];
+					arr2[Low] = arr2[High];
+					arr2[High] = T;
+					++Low;
+					--High;
+				}
+			} while (Low <= High);
+			if (p < High) QuickSort(arr2, p, High);
+			if (Low < r) QuickSort(arr2, Low, r);
+		}
+	}
 
 	public class CuttingPlan
 	{
@@ -94,7 +228,7 @@ namespace Cutter
 
 			for (int i = 0; i <= cuttingPlanTemp.Szaldarab; ++i)
 			{
-				SzalDarabRendezes(cuttingPlanTemp.Eredmeny, cuttingPlanTemp.Hatarok, i, false);
+				Rendezesek.SzalDarabRendezes(cuttingPlanTemp.Eredmeny, cuttingPlanTemp.Hatarok, i, false);
 			}
 
 			cuttingPlanTemp.Eredmeny = Optimalizalo2(probakszama);
@@ -122,15 +256,8 @@ namespace Cutter
 			negyzetosszeg += akthull * akthull;
 		}
 
-		void SzalDarabRendezes(int[] arr, int[] hatarok, int index, bool csokkeno)
-		{
-			//Az index szál darabjait rendezi sorba növekvő/csökkenő érték szerint.
-			int[] tempArr = new int[hatarok[1 + index] - hatarok[index]];
-			Array.Copy(arr, hatarok[index], tempArr, 0, tempArr.Length);
-			Array.Sort(tempArr);
-			if (csokkeno) Array.Reverse(tempArr);
-			Array.Copy(tempArr, 0, arr, hatarok[index], tempArr.Length);
-		}
+		/*
+		*/
 
 		int[] Optimalizalo()
 		{
@@ -567,27 +694,6 @@ namespace Cutter
 			return arr;
 		}
 
-		void RendezHulladekCsokkeno2D(int[,] tomb2D, int sordarab)
-		{
-			int mintempindex;
-			for (int i = 0; i < sordarab - 1; ++i)
-			{
-				mintempindex = i;
-				for (int j = 1 + i; j < sordarab; ++j)
-				{
-					if (tomb2D[j, 1] > tomb2D[mintempindex, 1])
-					{
-						mintempindex = j;
-					}
-				}
-				if (mintempindex > i)
-				{
-					//csere i,mintempindex
-					SzalCsere2D(tomb2D, i, mintempindex);
-				}
-			}
-		}
-
 		void SzalCsere2D(int[,] Tomb2D, int szal1, int szal2)
 		{
 			int mashossz = Tomb2D[szal1, 0];
@@ -607,20 +713,6 @@ namespace Cutter
 			Tomb2D[szal2, 1] = tmp;
 		}
 
-		void SzalRendez2D(int[,] tomb2d, int sordarab)
-		{
-			for (int i = 0; i < sordarab; ++i)
-			{
-				int[] arr = new int[tomb2d[i, 0]];
-				int k = 2;
-				int jmax = arr.Length;
-				for (int j = 0; j < jmax; ++j, ++k) arr[j] = tomb2d[i, k];
-				Array.Sort(arr); Array.Reverse(arr);
-				k = 2;
-				for (int j = 0; j < jmax; ++j, ++k) tomb2d[i, k] = arr[j];
-			}
-		}
-
 		string Sorstringbe(int[,] arr, int index)
 		{
 			StringBuilder s = new StringBuilder();
@@ -637,8 +729,8 @@ namespace Cutter
 		{
 			if (cuttingPlan.Osszeg == 0) return "";
 			cuttingPlanTemp.KettodArr = ConvertTomb1dToTomb2d(cuttingPlanTemp.Eredmeny, cuttingPlanTemp.Szalhossz);
-			RendezHulladekCsokkeno2D(cuttingPlanTemp.KettodArr, 1 + cuttingPlanTemp.Szaldarab);
-			SzalRendez2D(cuttingPlanTemp.KettodArr, 1 + cuttingPlanTemp.Szaldarab);
+			Rendezesek.RendezHulladekCsokkeno2D(cuttingPlanTemp.KettodArr, 1 + cuttingPlanTemp.Szaldarab);
+			Rendezesek.SzalRendez2D(cuttingPlanTemp.KettodArr, 1 + cuttingPlanTemp.Szaldarab);
 			StringBuilder s = new StringBuilder();
 			int sormax = 1 + cuttingPlanTemp.Szaldarab;
 			int osszhull = 0;
@@ -791,7 +883,7 @@ namespace Cutter
 			cuttingPlanTemp.Eredmeny = Optimalizalo();
 			for (int i = 0; i <= cuttingPlanTemp.Szaldarab; ++i)
 			{
-				SzalDarabRendezes(cuttingPlanTemp.Eredmeny, cuttingPlanTemp.Hatarok, i, false);
+				Rendezesek.SzalDarabRendezes(cuttingPlanTemp.Eredmeny, cuttingPlanTemp.Hatarok, i, false);
 			}
 
 			cuttingPlanTemp.Eredmeny = Optimalizalo11(probakszama);
@@ -817,16 +909,6 @@ namespace Cutter
 				}
 			}
 			maxnegyzet += akthull * akthull;
-		}
-
-		void SzalDarabRendezes(int[] arr, int[] hatarok, int index, bool csokkeno)
-		{
-			//Az index szál darabjait rendezi sorba növekvő/csökkenő érték szerint.
-			int[] tempArr = new int[hatarok[1 + index] - hatarok[index]];
-			Array.Copy(arr, hatarok[index], tempArr, 0, tempArr.Length);
-			Array.Sort(tempArr);
-			if (csokkeno) Array.Reverse(tempArr);
-			Array.Copy(tempArr, 0, arr, hatarok[index], tempArr.Length);
 		}
 
 		int[] Optimalizalo()
@@ -1300,27 +1382,6 @@ namespace Cutter
 			return arr;
 		}
 
-		void RendezHulladekCsokkeno2D(int[,] tomb2D, int sordarab)
-		{
-			int mintempindex;
-			for (int i = 0; i < sordarab - 1; ++i)
-			{
-				mintempindex = i;
-				for (int j = 1 + i; j < sordarab; ++j)
-				{
-					if (tomb2D[j, 1] > tomb2D[mintempindex, 1])
-					{
-						mintempindex = j;
-					}
-				}
-				if (mintempindex > i)
-				{
-					//csere i,mintempindex
-					SzalCsere2D(tomb2D, i, mintempindex);
-				}
-			}
-		}
-
 		void SzalCsere2D(int[,] Tomb2D, int szal1, int szal2)
 		{
 			int mashossz = Tomb2D[szal1, 0];
@@ -1340,20 +1401,6 @@ namespace Cutter
 			Tomb2D[szal2, 1] = tmp;
 		}
 
-		void SzalRendez2D(int[,] tomb2d, int sordarab)
-		{
-			for (int i = 0; i < sordarab; ++i)
-			{
-				int[] arr = new int[tomb2d[i, 0]];
-				int k = 2;
-				int jmax = arr.Length;
-				for (int j = 0; j < jmax; ++j, ++k) arr[j] = tomb2d[i, k];
-				Array.Sort(arr); Array.Reverse(arr);
-				k = 2;
-				for (int j = 0; j < jmax; ++j, ++k) tomb2d[i, k] = arr[j];
-			}
-		}
-
 		string Sorstringbe(int[,] arr, int index)
 		{
 			StringBuilder s = new StringBuilder();
@@ -1370,8 +1417,8 @@ namespace Cutter
 		{
 			if (cuttingPlan.Osszeg == 0) return "";
 			cuttingPlanTemp.KettodArr = ConvertTomb1dToTomb2d(cuttingPlanTemp.Eredmeny, cuttingPlanTemp.Szalhossz);
-			RendezHulladekCsokkeno2D(cuttingPlanTemp.KettodArr, 1 + cuttingPlanTemp.Szaldarab);
-			SzalRendez2D(cuttingPlanTemp.KettodArr, 1 + cuttingPlanTemp.Szaldarab);
+			Rendezesek.RendezHulladekCsokkeno2D(cuttingPlanTemp.KettodArr, 1 + cuttingPlanTemp.Szaldarab);
+			Rendezesek.SzalRendez2D(cuttingPlanTemp.KettodArr, 1 + cuttingPlanTemp.Szaldarab);
 			StringBuilder s = new StringBuilder();
 			int sormax = 1 + cuttingPlanTemp.Szaldarab;
 			int osszhull = 0;
@@ -1492,27 +1539,6 @@ namespace Cutter
 			for (int i = 0; i < darab; ++i) Osszeg += Eredmeny[i];
 		}
 
-		void RendezHulladekCsokkeno2D(int[,] tomb2D, int sordarab)
-		{
-			int mintempindex;
-			for (int i = 0; i < sordarab - 1; ++i)
-			{
-				mintempindex = i;
-				for (int j = 1 + i; j < sordarab; ++j)
-				{
-					if (tomb2D[j, 1] > tomb2D[mintempindex, 1])
-					{
-						mintempindex = j;
-					}
-				}
-				if (mintempindex > i)
-				{
-					//csere i,mintempindex
-					SzalCsere2D(tomb2D, i, mintempindex);
-				}
-			}
-		}
-
 		void SzalCsere2D(int[,] Tomb2D, int szal1, int szal2)
 		{
 			int mashossz = Tomb2D[szal1, 0];
@@ -1532,48 +1558,10 @@ namespace Cutter
 			Tomb2D[szal2, 1] = tmp;
 		}
 
-		void SzalRendez2D(int[,] tomb2d, int sordarab)
-		{
-			for (int i = 0; i < sordarab; ++i)
-			{
-				int[] arr = new int[tomb2d[i, 0]];
-				int k = 2;
-				int jmax = arr.Length;
-				for (int j = 0; j < jmax; ++j, ++k) arr[j] = tomb2d[i, k];
-				Array.Sort(arr); Array.Reverse(arr);
-				k = 2;
-				for (int j = 0; j < jmax; ++j, ++k) tomb2d[i, k] = arr[j];
-			}
-		}
-
-		static void QuickSort(int[] arr2, int p, int r)
-		{//quicksort
-			int Low, High;
-			int MidValue;
-			Low = p;
-			High = r;
-			MidValue = arr2[(p + r) / 2];
-			do
-			{
-				while (arr2[Low] < MidValue) ++Low;
-				while (arr2[High] > MidValue) --High;
-				if (Low <= High)
-				{
-					int T = arr2[Low];
-					arr2[Low] = arr2[High];
-					arr2[High] = T;
-					++Low;
-					--High;
-				}
-			} while (Low <= High);
-			if (p < High) QuickSort(arr2, p, High);
-			if (Low < r) QuickSort(arr2, Low, r);
-		}
-
 		void Teszt_1(int[] tomb)
 		{
 			int size = tomb.Length;
-			QuickSort(tomb, 0, size - 1);
+			Rendezesek.QuickSort(tomb, 0, size - 1);
 			//Array.Sort(tomb);
 			int n = tomb.Length;
 			int i, j, temp;
@@ -1742,8 +1730,8 @@ namespace Cutter
 		{
 			if (Osszeg == 0) return "";
 			KettodArr = ConvertTomb1dToTomb2d(Eredmeny, szalhossz);
-			RendezHulladekCsokkeno2D(KettodArr, 1 + Szaldarab);
-			SzalRendez2D(KettodArr, 1 + Szaldarab);
+			Rendezesek.RendezHulladekCsokkeno2D(KettodArr, 1 + Szaldarab);
+			Rendezesek.SzalRendez2D(KettodArr, 1 + Szaldarab);
 			StringBuilder s = new StringBuilder();
 			int sormax = 1 + Szaldarab;
 			int osszhull = 0;
@@ -1815,8 +1803,8 @@ namespace Cutter
 		{
 			if (Osszeg == 0) return "";
 			KettodArr = ConvertTomb1dToTomb2d(Eredmeny, szalhossz);
-			RendezHulladekCsokkeno2D(KettodArr, 1 + Szaldarab);
-			SzalRendez2D(KettodArr, 1 + Szaldarab);
+			Rendezesek.RendezHulladekCsokkeno2D(KettodArr, 1 + Szaldarab);
+			Rendezesek.SzalRendez2D(KettodArr, 1 + Szaldarab);
 			StringBuilder s = new StringBuilder();
 			int sormax = 1 + Szaldarab;
 			int osszhull = 0;
