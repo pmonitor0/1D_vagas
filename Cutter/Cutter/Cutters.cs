@@ -76,7 +76,7 @@ namespace Cutter
 			}
 		}
 
-		
+
 		public static void RendezHulladekCsokkeno2D(int[,] tomb2D, int sordarab)
 		{
 			int mintempindex;
@@ -96,7 +96,7 @@ namespace Cutter
 				}
 			}
 		}
-		
+
 		static void SzalCsere2D(int[,] Tomb2D, int szal1, int szal2)
 		{
 			int mashossz = Tomb2D[szal1, 0];
@@ -255,9 +255,6 @@ namespace Cutter
 			}
 			negyzetosszeg += akthull * akthull;
 		}
-
-		/*
-		*/
 
 		int[] Optimalizalo()
 		{
@@ -692,25 +689,6 @@ namespace Cutter
 			}
 			arr[1 + aktsor, 1] = szalhossz;
 			return arr;
-		}
-
-		void SzalCsere2D(int[,] Tomb2D, int szal1, int szal2)
-		{
-			int mashossz = Tomb2D[szal1, 0];
-			if (Tomb2D[szal2, 0] > Tomb2D[szal1, 0]) mashossz = Tomb2D[szal2, 0];
-			int tmp;
-			for (int i = 0; i < mashossz; ++i)
-			{
-				tmp = Tomb2D[szal1, 2 + i];
-				Tomb2D[szal1, 2 + i] = Tomb2D[szal2, 2 + i];
-				Tomb2D[szal2, 2 + i] = tmp;
-			}
-			tmp = Tomb2D[szal1, 0];
-			Tomb2D[szal1, 0] = Tomb2D[szal2, 0];
-			Tomb2D[szal2, 0] = tmp;
-			tmp = Tomb2D[szal1, 1];
-			Tomb2D[szal1, 1] = Tomb2D[szal2, 1];
-			Tomb2D[szal2, 1] = tmp;
 		}
 
 		string Sorstringbe(int[,] arr, int index)
@@ -1332,27 +1310,6 @@ namespace Cutter
 			hatarok[1 + szaldarab] = arr.Length;
 		}
 
-
-		int[] ConvertTomb2dToTomb1d(int[,] tomb2d, int szalhossz)
-		{
-			int osszdarab = 0;
-			for (int i = 0; i < tomb2d.GetLength(0); ++i)
-			{
-				if (tomb2d[i, 1] < szalhossz) osszdarab += tomb2d[i, 0];
-				else break;
-			}
-			int[] tomb = new int[osszdarab];
-			int tombindex = 0;
-			for (int i = 0; i < osszdarab; ++i)
-			{
-				for (int j = 0; j < tomb2d[i, 0]; ++j, ++tombindex)
-				{
-					tomb[tombindex] = tomb2d[i, 2 + j];
-				}
-			}
-			return tomb;
-		}
-
 		int[,] ConvertTomb1dToTomb2d(int[] tomb, int szalhossz)
 		{
 			int[,] arr = new int[1 + tomb.Length, 2 + tomb.Length];
@@ -1380,25 +1337,6 @@ namespace Cutter
 			}
 			arr[1 + aktsor, 1] = szalhossz;
 			return arr;
-		}
-
-		void SzalCsere2D(int[,] Tomb2D, int szal1, int szal2)
-		{
-			int mashossz = Tomb2D[szal1, 0];
-			if (Tomb2D[szal2, 0] > Tomb2D[szal1, 0]) mashossz = Tomb2D[szal2, 0];
-			int tmp;
-			for (int i = 0; i < mashossz; ++i)
-			{
-				tmp = Tomb2D[szal1, 2 + i];
-				Tomb2D[szal1, 2 + i] = Tomb2D[szal2, 2 + i];
-				Tomb2D[szal2, 2 + i] = tmp;
-			}
-			tmp = Tomb2D[szal1, 0];
-			Tomb2D[szal1, 0] = Tomb2D[szal2, 0];
-			Tomb2D[szal2, 0] = tmp;
-			tmp = Tomb2D[szal1, 1];
-			Tomb2D[szal1, 1] = Tomb2D[szal2, 1];
-			Tomb2D[szal2, 1] = tmp;
 		}
 
 		string Sorstringbe(int[,] arr, int index)
@@ -1537,25 +1475,6 @@ namespace Cutter
 			int darab = Eredmeny.Length;
 			Osszeg = 0;
 			for (int i = 0; i < darab; ++i) Osszeg += Eredmeny[i];
-		}
-
-		void SzalCsere2D(int[,] Tomb2D, int szal1, int szal2)
-		{
-			int mashossz = Tomb2D[szal1, 0];
-			if (Tomb2D[szal2, 0] > Tomb2D[szal1, 0]) mashossz = Tomb2D[szal2, 0];
-			int tmp;
-			for (int i = 0; i < mashossz; ++i)
-			{
-				tmp = Tomb2D[szal1, 2 + i];
-				Tomb2D[szal1, 2 + i] = Tomb2D[szal2, 2 + i];
-				Tomb2D[szal2, 2 + i] = tmp;
-			}
-			tmp = Tomb2D[szal1, 0];
-			Tomb2D[szal1, 0] = Tomb2D[szal2, 0];
-			Tomb2D[szal2, 0] = tmp;
-			tmp = Tomb2D[szal1, 1];
-			Tomb2D[szal1, 1] = Tomb2D[szal2, 1];
-			Tomb2D[szal2, 1] = tmp;
 		}
 
 		void Teszt_1(int[] tomb)
@@ -1880,10 +1799,6 @@ namespace Cutter
 			return s.ToString();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
 		public override string ToString()
 		{
 			return WString2D();
